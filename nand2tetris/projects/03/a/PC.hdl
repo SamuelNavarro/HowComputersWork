@@ -16,10 +16,21 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-	Inc16 (in=in, out=incrout);
-	Register (in=in, load=load, out=loadout);
-	Mux16 (a=false, b=incrout, sel=inc, out=incout);
-	Mux16 (a=loadout, b=incout, sel=inc, out=out);
+      Mux16 (a=prevout, b=false, sel=reset, out=resetout);
+      Mux16 (a=prevout, b=in, sel=load, out=loadout);
+      Mux16 (a=loadout, b=resetout, sel=reset, out=tmpoutreset);  /* prevalece reset */
+      Inc16 (in=prevout, out=incout);
+      Mux16 (a=incout, b=loadout, sel=load, out=tmpoutload);  /* prevalece load */
+      Mux16 (a=prevout, b=incout, sel=inc, out=tmpoutinc);
 
+      Mux16 (a=tmpoutload, b=tmpoutreset, sel=reset, out=w1);
+      Mux16 (a=prevout, b=tmpoutinc, sel=inc, out=w2);
+      Or (a=load, b=reset, out=sel1);  /*Ya sea uno u otro, pasa w1 o s1 */
+      Mux16 (a=w2, b=w1, sel=sel1, out=w3);
 
+      Mux (a=load, b=reset, sel=reset, out=s1);
+      Mux (a=false, b=inc, sel=inc, out=s2);
+      Mux (a=s2, b=s1, sel=sel1, out=newsel);
+
+      Register (in=w3, load=newsel, out=out, out=prevout);
 }
