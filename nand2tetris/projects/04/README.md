@@ -137,6 +137,7 @@ If I access the overall RAM, I have to take this relative address and add to it 
 ### Keyboard
 - In the Hack computer: probe the contents of RAM[24576]
 
+![memory_map](./images/memory_map.png)
 
 
 
