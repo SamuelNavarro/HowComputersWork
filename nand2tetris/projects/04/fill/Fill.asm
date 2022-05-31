@@ -10,67 +10,42 @@
 // When no key is pressed, the program clears the screen, i.e. writes
 // "white" in every pixel;
 // the screen should remain fully clear as long as no key is pressed.
-
-@SCREEN
-D=A
-@addr
-M=D 
-@24575
-D=A
-@n    
-M=D  
-
 (START)
-@KBD
-D=M
-@FILL
-D;JNE
-@UNFILL
-D;JEQ
+  @SCREEN
+  D=A
+  @addr
+  M=D 
+
+(LOOP)
+  @KBD
+  D=M
+  @UNFILL
+  D;JEQ
+  @FILL
+  0;JMP
 
 (FILL)
-@addr
-D=M
-@n
-D=D-M
-@START
-D;JGT
-
-@addr
-A=M
-M=-1
-@addr
-A=M
-A=A+1
-D=A
-@addr
-M=D
-@KBD
-D=M
-@FILL
-D;JNE
-@UNFILL
-D;JEQ
+  @addr
+  A=M
+  M=-1
+  @NEXT
+  0;JMP
 
 (UNFILL)
-@addr
-D=M
-@n
-D=D-M
-@START
-D;JGT
-@addr
-A=M
-M=0
-@addr
-A=M
-A=A+1
-D=A
-@addr
-M=D
-@KBD
-D=M
-@FILL
-D;JNE
-@UNFILL
-D;JEQ
+  @addr
+  A=M
+  M=0
+  @NEXT
+  0;JMP
+
+
+(NEXT)
+  @addr
+  D=M+1
+  M=D
+  @KBD
+  D=A-D
+  @START
+  D;JEQ
+  @LOOP
+  0;JMP
