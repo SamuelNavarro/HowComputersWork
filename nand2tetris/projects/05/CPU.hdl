@@ -38,6 +38,51 @@ CHIP CPU {
         addressM[15],    // Address in data memory (of M)
         pc[15];          // address of next instruction
 
+    // 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+    // 1  1  1  a  c1 c2 c3 c4 c5 c6 d1 d2 d3 j1 j2 j3
+    // For dest
+    // 1 0 0 -> A
+    // 0 0 1 -> M
+    // 0 1 0 -> D
+
+
     PARTS:
-    // Put your code here:
+    And(a=instruction[15], b=true, out=C);
+    Not(in=C, out=A);
+
+    And(a=C, b=instruction[5], out=CandToA);
+    Or(a=A, b=CandToA, out=loadA);
+    Mux16(a=aluout, b=instruction, sel=A, out=toareg);
+
+    And(a=C, b=instruction[4], out=loadD);
+
+    ARegister(in=toareg, load=loadA, out=outAreg, out[0..14]=addressM);
+    DRegister(in=todreg, load=loadD, out=X);
+
+
+    Mux16(a=outAreg, b=inM, sel=instruction[12], out=Y);
+    ALU(x=X, y=Y, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8],f= instruction[7], no=instruction[6], out=aluout, out=todreg, out=outM, zr=zr, ng=ng);
+
+    Not(in=zr, out=notZr);
+    Not(in=ng, out=notNg);
+    And(a=notZr, b=notNg, out=ps);
+
+    And(a=ps, b=instruction[0], out=psMatch);
+    And(a=zr, b=instruction[1], out=zrMatch);
+    And(a=ng, b=instruction[2], out=ngMatch);
+
+    And(a=C, b=psMatch, out=JumpPS);
+    And(a=C, b=zrMatch, out=JumpZR);
+    And(a=C, b=ngMatch, out=JumpNG);
+
+    Or(a=JumpZR, b=JumpNG, out=JumpzrOrng);
+    Or(a=JumpzrOrng, b=JumpPS, out=loadPC);
+
+
+    PC(in=outAreg, inc=true, load=loadPC, reset=reset, out[0..14]=pc);
+
+    And(a=C, b=instruction[3], out=writeM);
+
+
+
 }
