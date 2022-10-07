@@ -56,11 +56,16 @@ Sometimes we need to "jump" unconditionally to another locations, e.g. so we can
 
 ## The Hack Computer and Machine Language
 
+![hardware](./images/hardware.png)
+
 ![hack_computer](./images/hack_computer.png)
 
 How do we control this computer. We do it with software
 The design of the computer is with 2 types of instructions, C and A instructions. A Hack program is the sequence of instructions written in the Hack machine language.
 
+- The D register which holds 16 bit value (that represents data).
+- A also holds a 16 bit value or address.
+- M represents the 16-bit RAM register addressed by A
 
 ### Control
 - The ROM is loaded with a Hack program
@@ -102,7 +107,6 @@ Side effects:
 - `RAM[A]` called M becomes selected.
 - `ROM[A]` becomes selected
 
-
 ![hack_arch](./images/hack_arch.png)
 
 We have an unconditional jump: `0; JMP`
@@ -118,6 +122,7 @@ M=A-1;JEQ
 - The JEQ jump directive is activated, so the next instruction will be the value stored in A
 
 
+![c_instruction](./images/c_instruction.png)
 
 
 ## Input / Output
@@ -130,9 +135,17 @@ When we access memory, we can only retrieve 16 bits in one chunk, we cannot retr
 
 Row 0 is from 0 to 31 because 512 / 16 is 32
 
+
 ![screen_memory_map](./images/screen_memory_map.png)
 
-If I access the overall RAM, I have to take this relative address and add to it the relative address of 
+The base address of the Screen is 16384. So, you need 8191. You get 16384+8191=24575
+
+
+Example:
+You want to change the bit in row 4, column 55, what address should you retrieve, and which bit should you change?
+- Screen[131], 7th bit.
+
+
 
 ### Keyboard
 - In the Hack computer: probe the contents of RAM[24576]
@@ -206,6 +219,14 @@ So, whenever we want to address one of the first 16 registers in the memory, use
 
 Variables are in lower case and start from 16th register in the memory.
 
+
+![variables_2](./images/variables_2.png)
+
+
+
+
+
+
 ## Iterators
 
 ![hack_iter](./images/hack_iter.png)
@@ -214,6 +235,12 @@ Variables are in lower case and start from 16th register in the memory.
 
 ## Pointers
 
+
+An array is basically a representation of memory. We just need the base address and the length.
+
+
+**In our example, is very important to note that we assummed that arr has been already initialized before.**
+
 ![pointer_ex](./images/pointer_ex.png)
 
 
@@ -221,7 +248,7 @@ Variables are in lower case and start from 16th register in the memory.
 
 - Variables that store memory addresses, like `arr` and `i` are called pointers.
 - Whenever we have to access memory using a pointer, we need an instruction like `A=M`
-- Typical pointer semantics: set the address register to the value retrieved from memory.
+- Typical pointer semantics: "set the address register to the value retrieved from memory."
 
 
 ![rec_pseudo](./images/rec_pseudo.png)
